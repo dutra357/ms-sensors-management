@@ -1,4 +1,4 @@
-package com.dutra.sensors.management.api.config;
+package com.dutra.sensors.management.api.config.jakson;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;

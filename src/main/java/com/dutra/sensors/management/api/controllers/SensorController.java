@@ -1,8 +1,10 @@
 package com.dutra.sensors.management.api.controllers;
 
 import com.dutra.sensors.management.api.model.SensorInput;
+import com.dutra.sensors.management.api.model.SensorOutput;
 import com.dutra.sensors.management.common.IdGenerator;
 import com.dutra.sensors.management.domain.model.Sensor;
+import com.dutra.sensors.management.domain.repository.SensorRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/sensors")
 public class SensorController {
 
+    private final SensorRepository repository;
+
+    public SensorController(SensorRepository repository) {
+        this.repository = repository;
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Sensor create(@RequestBody SensorInput sensor) {
+    public SensorOutput create(@RequestBody SensorInput sensor) {
         Sensor newSensor = new Sensor();
 
         newSensor.setName(sensor.getName());
@@ -24,10 +32,7 @@ public class SensorController {
 
         newSensor.setTsid(IdGenerator.generate());
 
-        return newSensor;
-
-
+        return new SensorOutput(repository.save(newSensor));
     }
-
 
 }

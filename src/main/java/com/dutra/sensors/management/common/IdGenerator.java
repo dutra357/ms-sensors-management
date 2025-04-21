@@ -4,9 +4,6 @@ import io.hypersistence.tsid.TSID;
 
 public class IdGenerator {
 
-    private IdGenerator() {
-    }
-
     public static TSID generate() {
         return TSID.Factory.getTsid();
     }

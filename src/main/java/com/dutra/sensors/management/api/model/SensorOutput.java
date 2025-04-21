@@ -1,18 +1,12 @@
-package com.dutra.sensors.management.domain.model;
+package com.dutra.sensors.management.api.model;
 
+import com.dutra.sensors.management.domain.model.Sensor;
+import com.dutra.sensors.management.domain.model.SensorId;
 import io.hypersistence.tsid.TSID;
-import jakarta.persistence.*;
 
-import java.util.Objects;
+public class SensorOutput {
 
-@Entity
-public class Sensor {
-
-    @Id
-    @Column(columnDefinition = "bigint")
-    @EmbeddedId
-    private SensorId tsid;
-
+    private TSID tsid;
     private String name;
     private String ip;
     private String location;
@@ -20,12 +14,11 @@ public class Sensor {
     private String model;
     private Boolean enabled = false;
 
-    public Sensor() {}
-
-    public Sensor(TSID tsid, String name, String ip,
-                  String location, String protocol,
-                  String model, Boolean enabled) {
-        this.tsid = new SensorId(tsid);
+    public SensorOutput(SensorId tsid, String name,
+                        String ip, String location,
+                        String protocol, String model,
+                        Boolean enabled) {
+        this.tsid = tsid.getTsid();
         this.name = name;
         this.ip = ip;
         this.location = location;
@@ -34,12 +27,22 @@ public class Sensor {
         this.enabled = enabled;
     }
 
-    public SensorId getTsId() {
+    public SensorOutput(Sensor sensor) {
+        this.tsid = sensor.getTsId().getTsid();
+        this.name = sensor.getName();
+        this.ip = sensor.getIp();
+        this.location = sensor.getLocation();
+        this.protocol = sensor.getProtocol();
+        this.model = sensor.getModel();
+        this.enabled = sensor.getEnabled();
+    }
+
+    public TSID getTsid() {
         return tsid;
     }
 
     public void setTsid(TSID tsid) {
-        this.tsid = new SensorId(tsid);
+        this.tsid = tsid;
     }
 
     public String getName() {
@@ -88,30 +91,5 @@ public class Sensor {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Sensor sensor = (Sensor) o;
-        return Objects.equals(tsid, sensor.tsid);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(tsid);
-    }
-
-    @Override
-    public String toString() {
-        return "Sensor{" +
-                "tsid=" + tsid +
-                ", name='" + name + '\'' +
-                ", ip='" + ip + '\'' +
-                ", location='" + location + '\'' +
-                ", protocol='" + protocol + '\'' +
-                ", model='" + model + '\'' +
-                ", enabled=" + enabled +
-                '}';
     }
 }
