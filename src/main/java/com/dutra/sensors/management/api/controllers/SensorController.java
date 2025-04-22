@@ -23,21 +23,6 @@ public class SensorController {
         this.repository = repository;
     }
 
-    @GetMapping("{sensorId}")
-    public SensorOutput getOne(@PathVariable TSID sensorId) {
-        Sensor sensor = repository.findById(new SensorId(sensorId))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        return new SensorOutput(sensor);
-    }
-
-    @GetMapping
-    public Page<SensorOutput> findAll(Pageable pageable) {
-        Page<Sensor> sensors = repository.findAll(pageable);
-        return sensors.map(SensorOutput::new);
-    }
-
-
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public SensorOutput create(@RequestBody SensorInput sensor) {
@@ -53,6 +38,35 @@ public class SensorController {
         newSensor.setTsid(IdGenerator.generate());
 
         return new SensorOutput(repository.save(newSensor));
+    }
+
+    @GetMapping("{sensorId}")
+    public SensorOutput getOne(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return new SensorOutput(sensor);
+    }
+
+    @GetMapping
+    public Page<SensorOutput> findAll(Pageable pageable) {
+        Page<Sensor> sensors = repository.findAll(pageable);
+        return sensors.map(SensorOutput::new);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("{sensorId}")
+    public SensorOutput update(@PathVariable TSID sensorId, @RequestBody SensorInput sensor) {
+        Sensor existingSensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        existingSensor.setName(sensor.getName());
+        existingSensor.setIp(sensor.getIp());
+        existingSensor.setLocation(sensor.getLocation());
+        existingSensor.setProtocol(sensor.getProtocol());
+        existingSensor.setModel(sensor.getModel());
+
+        return new SensorOutput(repository.save(existingSensor));
     }
 
 }
