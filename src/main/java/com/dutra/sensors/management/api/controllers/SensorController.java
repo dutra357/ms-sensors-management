@@ -7,6 +7,8 @@ import com.dutra.sensors.management.domain.model.Sensor;
 import com.dutra.sensors.management.domain.model.SensorId;
 import com.dutra.sensors.management.domain.repository.SensorRepository;
 import io.hypersistence.tsid.TSID;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -56,7 +58,7 @@ public class SensorController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("{sensorId}")
-    public SensorOutput update(@PathVariable TSID sensorId, @RequestBody SensorInput sensor) {
+    public SensorOutput update(@PathVariable TSID sensorId, @Valid @RequestBody SensorInput sensor) {
         Sensor existingSensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -67,6 +69,37 @@ public class SensorController {
         existingSensor.setModel(sensor.getModel());
 
         return new SensorOutput(repository.save(existingSensor));
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("{sensorId}")
+    public void delete(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        repository.delete(sensor);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("{sensorId}/enable")
+    public SensorOutput enable(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        sensor.setEnabled(true);
+
+        return new SensorOutput(repository.save(sensor));
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("{sensorId}/enable")
+    public SensorOutput disable(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        sensor.setEnabled(false);
+
+        return new SensorOutput(repository.save(sensor));
     }
 
 }

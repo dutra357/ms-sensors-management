@@ -1,11 +1,18 @@
 package com.dutra.sensors.management.api.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SensorInput {
 
+    @NotBlank
     private String name;
+    @NotBlank
     private String ip;
+    @NotBlank
     private String location;
+    @NotBlank
     private String protocol;
+    @NotBlank
     private String model;
 
     public SensorInput(String name, String ip,
