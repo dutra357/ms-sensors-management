@@ -5,5 +5,5 @@ import com.dutra.sensors.management.domain.model.SensorId;
 import io.hypersistence.tsid.TSID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SensorRepository extends JpaRepository<Sensor, SensorId>{
+public interface SensorRepository extends JpaRepository<Sensor, TSID>{
 }
