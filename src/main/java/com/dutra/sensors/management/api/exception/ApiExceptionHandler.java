@@ -1,6 +1,5 @@
-package com.dutra.sensors.management.api.exceptions;
+package com.dutra.sensors.management.api.exception;
 
-import com.dutra.sensors.management.api.client.exception.SensorMonitoringClientException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +14,11 @@ import java.nio.channels.ClosedChannelException;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
+
+    /**
+     * Padrão de erro conforme JAVA 17 e RFC 7807.
+     * Uso do ProblemDetail para padronizar o retorno.
+     */
 
     @ExceptionHandler({SocketTimeoutException.class, ConnectException.class, ClosedChannelException.class})
     public ProblemDetail handleException(IOException e) {

@@ -11,10 +11,9 @@ public class TsIDJaksonConfig {
 
     @Bean
     public Module tsIDModule() {
-
         SimpleModule module =  new SimpleModule();
         module.addSerializer(TSID.class, new TsIDtoString());
-
+        module.addDeserializer(TSID.class, new StringToTSID());
         return module;
     }
 }

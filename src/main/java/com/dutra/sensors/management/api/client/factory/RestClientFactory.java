@@ -1,6 +1,6 @@
 package com.dutra.sensors.management.api.client.factory;
 
-import com.dutra.sensors.management.api.client.exception.SensorMonitoringClientException;
+import com.dutra.sensors.management.api.exception.SensorMonitoringClientException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -9,7 +9,6 @@ import org.springframework.web.client.RestClient;
 public class RestClientFactory {
 
     private final RestClient.Builder builder;
-
     public RestClientFactory(RestClient.Builder builder) {
         this.builder = builder;
     }

@@ -1,4 +1,4 @@
-package com.dutra.sensors.management.api.client.exception;
+package com.dutra.sensors.management.api.exception;
 
 public class SensorMonitoringClientException extends RuntimeException {
 

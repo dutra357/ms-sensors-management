@@ -1,6 +1,8 @@
 package com.dutra.sensors.management.api.controllers;
 
 import com.dutra.sensors.management.api.client.interfaces.SensorMonitoringClient;
+import com.dutra.sensors.management.api.model.MonitoringOutput;
+import com.dutra.sensors.management.api.model.SensorDetailOutput;
 import com.dutra.sensors.management.api.model.SensorInput;
 import com.dutra.sensors.management.api.model.SensorOutput;
 import com.dutra.sensors.management.common.IdGenerator;
@@ -93,6 +95,17 @@ public class SensorController {
         sensor.setEnabled(true);
         repository.save(sensor);
         monitoringClient.enableMonitoring(sensorId);
+    }
+
+    @GetMapping("{sensorId}/detail")
+    public SensorDetailOutput getDetails(@PathVariable TSID sensorId) {
+
+        Sensor sensor = repository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        MonitoringOutput details = monitoringClient.getDetail(sensorId);
+
+        return new SensorDetailOutput(new SensorOutput(sensor), details);
     }
 
     @DeleteMapping("{sensorId}/enable")
