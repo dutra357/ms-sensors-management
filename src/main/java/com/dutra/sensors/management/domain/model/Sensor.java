@@ -8,7 +8,6 @@ import java.util.Objects;
 @Entity
 public class Sensor {
 
-    @Id
     @Column(columnDefinition = "bigint")
     @EmbeddedId
     private SensorId tsid;

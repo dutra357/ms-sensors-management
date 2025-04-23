@@ -1,9 +1,11 @@
 package com.dutra.sensors.management.api.controllers;
 
+import com.dutra.sensors.management.api.client.interfaces.SensorMonitoringClient;
 import com.dutra.sensors.management.api.model.SensorInput;
 import com.dutra.sensors.management.api.model.SensorOutput;
 import com.dutra.sensors.management.common.IdGenerator;
 import com.dutra.sensors.management.domain.model.Sensor;
+import com.dutra.sensors.management.domain.model.SensorId;
 import com.dutra.sensors.management.domain.repository.SensorRepository;
 import io.hypersistence.tsid.TSID;
 import jakarta.validation.Valid;
@@ -18,9 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class SensorController {
 
     private final SensorRepository repository;
+    private final SensorMonitoringClient monitoringClient;
 
-    public SensorController(SensorRepository repository) {
+    public SensorController(SensorRepository repository,
+                            SensorMonitoringClient monitoringClient) {
         this.repository = repository;
+        this.monitoringClient = monitoringClient;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,7 +47,7 @@ public class SensorController {
 
     @GetMapping("{sensorId}")
     public SensorOutput getOne(@PathVariable TSID sensorId) {
-        Sensor sensor = repository.findById(sensorId)
+        Sensor sensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return new SensorOutput(sensor);
@@ -57,7 +62,7 @@ public class SensorController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("{sensorId}")
     public SensorOutput update(@PathVariable TSID sensorId, @Valid @RequestBody SensorInput sensor) {
-        Sensor existingSensor = repository.findById(sensorId)
+        Sensor existingSensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         existingSensor.setName(sensor.getName());
@@ -72,32 +77,33 @@ public class SensorController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("{sensorId}")
     public void delete(@PathVariable TSID sensorId) {
-        Sensor sensor = repository.findById(sensorId)
+        Sensor sensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         repository.delete(sensor);
+        monitoringClient.disableMonitoring(sensorId);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("{sensorId}/enable")
-    public SensorOutput enable(@PathVariable TSID sensorId) {
-        Sensor sensor = repository.findById(sensorId)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void enable(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         sensor.setEnabled(true);
-
-        return new SensorOutput(repository.save(sensor));
+        repository.save(sensor);
+        monitoringClient.enableMonitoring(sensorId);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("{sensorId}/enable")
-    public SensorOutput disable(@PathVariable TSID sensorId) {
-        Sensor sensor = repository.findById(sensorId)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void disable(@PathVariable TSID sensorId) {
+        Sensor sensor = repository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         sensor.setEnabled(false);
-
-        return new SensorOutput(repository.save(sensor));
+        repository.save(sensor);
+        monitoringClient.disableMonitoring(sensorId);
     }
 
 }
