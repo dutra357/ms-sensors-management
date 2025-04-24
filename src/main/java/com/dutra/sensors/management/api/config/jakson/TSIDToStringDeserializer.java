@@ -8,7 +8,7 @@ import io.hypersistence.tsid.TSID;
 
 import java.io.IOException;
 
-public class StringToTSID extends JsonDeserializer<TSID> {
+public class TSIDToStringDeserializer extends JsonDeserializer<TSID> {
     @Override
     public TSID deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
         return TSID.from(jsonParser.getText());
